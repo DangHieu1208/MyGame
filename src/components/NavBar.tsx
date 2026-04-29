@@ -1,49 +1,35 @@
-import { useState } from 'react'
+interface NavBarProps {
+  onSettingsToggle: () => void;
+  activeTab: 'Play' | 'Settings';
+}
 
-const NAV_ITEMS = ['Play', 'Inventory', 'Map', 'Shop', 'Settings']
-
-export default function NavBar() {
-  const [active, setActive] = useState('Play')
-
+export default function NavBar({ onSettingsToggle, activeTab }: NavBarProps) {
   return (
     <nav className="navbar" role="navigation" aria-label="Main navigation">
-      {/* Brand */}
-      <a className="navbar__brand" href="#" aria-label="Game home">
+      <div className="navbar__brand">
         <div className="navbar__logo" aria-hidden="true">⚔️</div>
-        <span className="navbar__title">MyGame</span>
-      </a>
-
-      {/* Navigation links */}
-      <div className="navbar__nav" role="menubar">
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item}
-            id={`nav-btn-${item.toLowerCase()}`}
-            role="menuitem"
-            className={`navbar__nav-btn${active === item ? ' active' : ''}`}
-            onClick={() => setActive(item)}
-            aria-current={active === item ? 'page' : undefined}
-          >
-            {item}
-          </button>
-        ))}
+        <span className="navbar__title">Maze Runner</span>
       </div>
 
-      {/* Right-side actions */}
-      <div className="navbar__actions">
-        <div className="navbar__badge" aria-label="Current gold">
-          <span aria-hidden="true">🪙</span>
-          <span>4,250</span>
-        </div>
-        <div
-          className="navbar__avatar"
-          role="button"
-          tabIndex={0}
-          aria-label="Player profile"
-          title="Player profile"
+      <div className="navbar__nav" role="menubar">
+        <button
+          role="menuitem"
+          className={`navbar__nav-btn${activeTab === 'Play' ? ' active' : ''}`}
+          onClick={() => activeTab === 'Settings' && onSettingsToggle()}
         >
-          P
-        </div>
+          Play
+        </button>
+        <button
+          role="menuitem"
+          className={`navbar__nav-btn${activeTab === 'Settings' ? ' active' : ''}`}
+          onClick={() => activeTab === 'Play' && onSettingsToggle()}
+        >
+          Settings
+        </button>
+      </div>
+
+      <div className="navbar__actions">
+        <div className="navbar__avatar" title="Player Profile">P</div>
       </div>
     </nav>
   )

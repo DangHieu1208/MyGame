@@ -19,6 +19,14 @@ export interface Player {
   moveCooldown: number;
   invincible: number;
   facing: Dir;
+  isImmune: boolean;
+  immunityTimer: number;
+  skin: string;
+}
+
+export interface Obstacle {
+  pos: Vec2;
+  breakProgress: number; // 0 to 10
 }
 
 export type MonsterState = 'patrol' | 'chase' | 'angry' | 'rage';
@@ -27,7 +35,7 @@ export interface Monster {
   id: number;
   pos: Vec2;
   drawPos: Vec2;
-  home: Vec2; // Center of their 4x4 zone
+  home: Vec2;
   hp: number; maxHp: number;
   attack: number;
   defense: number;
@@ -37,7 +45,7 @@ export interface Monster {
   patrolIdx: number;
   dead: boolean;
   state: MonsterState;
-  angryTimer: number; // ms remaining for angry emotion
+  angryTimer: number;
 }
 
 export interface MaterialItem {
@@ -69,10 +77,15 @@ export interface GameState {
   materials: MaterialItem[];
   receptors: Receptor[];
   portal: Portal;
+  obstacles: Obstacle[];
+  maxObstacles: number;
+  killsThisLevel: number;
   level: number;
   tick: number;
   gameOver: boolean;
   levelClear: boolean;
   upgrading: boolean;
+  showingSettings: boolean;
+  volume: number;
   floatMsgs: FloatMsg[];
 }

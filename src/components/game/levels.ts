@@ -83,13 +83,11 @@ export function buildLevel(level: number, prevScore = 0): GameState {
     const pos = roomPositions[i];
     const r: RoomDef = { rx: pos.x, ry: pos.y, entrance: pos.ent, color };
     const ef = placeRoom(grid, r);
-    
     carveV(grid, ef.x, ef.y, hubY);
     carveH(grid, hubY, ef.x, hubX);
 
     materials.push({ id: uid(), pos: { x: r.rx + 2, y: r.ry + 2 }, color, pickedUp: false });
 
-    // Monster Patterns
     const mHp = 3 + level * 2;
     const mAtk = 2 + level;
     const mSpd = Math.max(250, 600 - level * 100);
@@ -119,11 +117,16 @@ export function buildLevel(level: number, prevScore = 0): GameState {
       hp: 20, maxHp: 20, stamina: 30, maxStamina: 30,
       attack: 5, defense: 1, speed: 3, level, score: prevScore,
       held: null, moveCooldown: 0, invincible: 0, facing: 'right',
+      isImmune: false, immunityTimer: 0, skin: 'original'
     },
     monsters, materials, receptors,
     portal: { pos: portalPos, open: false },
+    obstacles: [],
+    maxObstacles: 3,
+    killsThisLevel: 0,
     level, tick: 0,
     gameOver: false, levelClear: false, upgrading: false,
+    showingSettings: false, volume: 0.5,
     floatMsgs: [],
   };
 }
