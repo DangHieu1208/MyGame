@@ -74,14 +74,15 @@ export function handleSpaceAction(gs: GameState) {
   }
 
   // 2. Otherwise, check if we can PLACE an obstacle at current position
-  if (gs.obstacles.length >= gs.maxObstacles) {
-    floatMsg(gs, 'Out of obstacles!', p.pos.x, p.pos.y, '#f0b429');
+  if (gs.obstaclesLeft <= 0) {
+    floatMsg(gs, 'No more obstacles!', p.pos.x, p.pos.y, '#f0b429');
     return;
   }
 
   const currentPos = { ...p.pos };
   if (!gs.obstacles.some(o => o.pos.x === currentPos.x && o.pos.y === currentPos.y)) {
     gs.obstacles.push({ pos: currentPos, breakProgress: 0 });
+    gs.obstaclesLeft--;
     sounds.playPlace();
     floatMsg(gs, 'Barrier dropped!', currentPos.x, currentPos.y, '#7a96ff');
   }

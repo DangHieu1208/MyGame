@@ -80,6 +80,7 @@ export interface GameState {
   portal: Portal;
   obstacles: Obstacle[];
   maxObstacles: number;
+  obstaclesLeft: number;
   killsThisLevel: number;
   level: number;
   tick: number;

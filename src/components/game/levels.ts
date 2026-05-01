@@ -39,19 +39,19 @@ function placeRoom(grid: Tile[][], r: RoomDef, size = 3): Vec2 {
   const ext = size + 2;
   for (let dy = 0; dy < ext; dy++)
     for (let dx = 0; dx < ext; dx++)
-      if (grid[ry+dy]?.[rx+dx]) grid[ry+dy][rx+dx] = wall();
+      if (grid[ry + dy]?.[rx + dx]) grid[ry + dy][rx + dx] = wall();
   for (let dy = 1; dy <= size; dy++)
     for (let dx = 1; dx <= size; dx++)
-      if (grid[ry+dy]?.[rx+dx]) {
-        grid[ry+dy][rx+dx] = r.color ? gemFloor(r.color) : monsterFloor();
+      if (grid[ry + dy]?.[rx + dx]) {
+        grid[ry + dy][rx + dx] = r.color ? gemFloor(r.color) : monsterFloor();
       }
 
   let ePos: Vec2 = { x: 0, y: 0 };
   const mid = Math.floor(ext / 2);
-  if (r.entrance === 'bottom') { grid[ry+ext-1][rx+mid] = floor(); ePos = { x: rx+mid, y: ry+ext }; }
-  else if (r.entrance === 'top') { grid[ry][rx+mid] = floor(); ePos = { x: rx+mid, y: ry-1 }; }
-  else if (r.entrance === 'left') { grid[ry+mid][rx] = floor(); ePos = { x: rx-1, y: ry+mid }; }
-  else { grid[ry+mid][rx+ext-1] = floor(); ePos = { x: rx+ext, y: ry+mid }; }
+  if (r.entrance === 'bottom') { grid[ry + ext - 1][rx + mid] = floor(); ePos = { x: rx + mid, y: ry + ext }; }
+  else if (r.entrance === 'top') { grid[ry][rx + mid] = floor(); ePos = { x: rx + mid, y: ry - 1 }; }
+  else if (r.entrance === 'left') { grid[ry + mid][rx] = floor(); ePos = { x: rx - 1, y: ry + mid }; }
+  else { grid[ry + mid][rx + ext - 1] = floor(); ePos = { x: rx + ext, y: ry + mid }; }
   return ePos;
 }
 
@@ -94,15 +94,28 @@ export function buildLevel(level: number, prevScore = 0): GameState {
     const pos = complexPositions[i];
     const M_SIZE = 5; // Monster room interior (7x7 exterior)
     const G_SIZE = 3; // Gem room interior (5x5 exterior)
-    
+
     // Offset calculation for exactly 3-block total bridge (including doors):
     // If Monster is first (7 wide): Wall at +6, Gap at +7, Gem Wall at +8. OFFSET = 8.
     // If Gem is first (5 wide): Wall at +4, Gap at +5, Monster Wall at +6. OFFSET = 6.
     const OFFSET = pos.dir === 'right' ? 8 : 6;
-    
+
     // 1. Monster Room
-    const mRoom: RoomDef = { rx: pos.x + (pos.dir === 'left' ? OFFSET : 0), ry: pos.y, entrance: pos.y < height/2 ? 'bottom' : 'top' };
+    const mRoom: RoomDef = { rx: pos.x + (pos.dir === 'left' ? OFFSET : 0), ry: pos.y, entrance: pos.y < height / 2 ? 'bottom' : 'top' };
     const ef = placeRoom(grid, mRoom, M_SIZE);
+
+    // Add two 2x1 walls in monster room (tactical obstacles)
+    const mx = mRoom.rx;
+    const my = mRoom.ry;
+    // Wall 1: (2,2) and (3,2) relative to interior
+    grid[my + 2][mx + 2] = wall();
+    grid[my + 2][mx + 3] = wall();
+    grid[my + 2][mx + 4] = wall();
+    // Wall 2: (2,4) and (3,4) relative to interior
+    grid[my + 4][mx + 2] = wall();
+    grid[my + 4][mx + 3] = wall();
+    grid[my + 4][mx + 4] = wall();
+
     carveV(grid, ef.x, ef.y, hubY);
     carveH(grid, hubY, ef.x, hubX);
 
@@ -127,7 +140,7 @@ export function buildLevel(level: number, prevScore = 0): GameState {
     const mSpd = Math.max(200, 500 - level * 50);
     const mCenter = { x: mRoom.rx + 3, y: mRoom.ry + 3 };
     const patrol = makeCircularPatrol(mCenter, 2); // Patrol the edge of the 5x5 interior
-    
+
     monsters.push({
       id: uid(), pos: mCenter, drawPos: { ...mCenter }, home: mCenter,
       hp: mHp, maxHp: mHp, attack: mAtk, defense: level, speed: mSpd, timer: 0,
@@ -157,6 +170,7 @@ export function buildLevel(level: number, prevScore = 0): GameState {
     portal: { pos: portalPos, open: false },
     obstacles: [],
     maxObstacles: 3,
+    obstaclesLeft: 3,
     killsThisLevel: 0,
     level, tick: 0,
     gameOver: false, levelClear: false, upgrading: false,

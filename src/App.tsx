@@ -47,10 +47,10 @@ function App() {
     if (!gsRef.current) return
     const p = gsRef.current.player
     sounds.playUpgrade()
-    if (stat === 'hp') { p.maxHp += 15; p.hp = p.maxHp }
-    if (stat === 'atk') p.attack += 3
-    if (stat === 'def') p.defense += 2
-    if (stat === 'spd') p.speed += 1.2
+    if (stat === 'hp') { p.maxHp += 10; p.hp = p.maxHp }
+    if (stat === 'atk') p.attack += 2
+    if (stat === 'def') p.defense += 1
+    if (stat === 'spd') p.speed += 1
     startGame(gsRef.current.level + 1, p.score)
   }, [startGame])
 
@@ -82,7 +82,7 @@ function App() {
 
     const interval = setInterval(() => {
       if (!gsRef.current || gsRef.current.gameOver || gsRef.current.upgrading || gsRef.current.showingSettings) return
-      
+
       const activeKeys = Array.from(keysPressed.current).filter(k => DIR_MAP[k])
       if (activeKeys.length > 0) {
         const lastKey = activeKeys[activeKeys.length - 1]
@@ -137,11 +137,11 @@ function App() {
   return (
     <div className="app-shell">
       <NavBar onSettingsToggle={toggleSettings} activeTab={gs?.showingSettings ? 'Settings' : 'Play'} />
-      <StatsPanel player={gs?.player} obstacles={gs?.maxObstacles ? gs.maxObstacles - gs.obstacles.length : 0} />
-      <GameView 
-        gs={gs} 
-        onStart={startGame} 
-        onMove={() => {}} 
+      <StatsPanel player={gs?.player} obstacles={gs?.obstaclesLeft ?? 0} />
+      <GameView
+        gs={gs}
+        onStart={startGame}
+        onMove={() => { }}
         onUpgrade={applyUpgrade}
         onUpdateSettings={updateSettings}
       />

@@ -121,7 +121,7 @@ export default function GameView({ gs, onStart, onUpgrade, onUpdateSettings }: G
       </div>
       <div className="game-view__hud">
         <div className="hud-item">Level {gs.level}</div>
-        <div className="hud-item">Obstacles: {gs.maxObstacles - gs.obstacles.length} / {gs.maxObstacles} [SPACE]</div>
+        <div className="hud-item">Obstacles Left: {gs.obstaclesLeft} [SPACE]</div>
         <div className="hud-item">{gs.player.isImmune ? <span style={{color:'#f0b429'}}>✨ IMMUNE</span> : `Kills: ${gs.killsThisLevel}/2`}</div>
       </div>
     </main>
