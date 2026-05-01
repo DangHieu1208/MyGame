@@ -28,12 +28,65 @@ export function render(ctx: CanvasRenderingContext2D, gs: GameState, camX: numbe
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const px = x * TILE, py = y * TILE;
-      if (gs.grid[y][x].type === 'wall') {
+      const tile = gs.grid[y][x];
+
+      if (tile.type === 'wall') {
         ctx.fillStyle = '#0d1020';
         ctx.fillRect(px, py, TILE, TILE);
         ctx.fillStyle = '#1c2136';
         ctx.fillRect(px + 1, py + 1, TILE - 2, TILE - 2);
+      } else if (tile.type === 'gem_floor') {
+        const color = tile.color ? MAT_COLORS[tile.color] : '#4a6cff';
+        // Base floor
+        ctx.fillStyle = '#121626';
+        ctx.fillRect(px, py, TILE, TILE);
+        
+        // Gem glow pattern
+        ctx.fillStyle = color + '11';
+        ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4);
+        
+        // Crystalline accents
+        ctx.strokeStyle = color + '33';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(px + 4, py + 4); ctx.lineTo(px + TILE - 4, py + TILE - 4);
+        ctx.moveTo(px + TILE - 4, py + 4); ctx.lineTo(px + 4, py + TILE - 4);
+        ctx.stroke();
+      } else if (tile.type === 'monster_floor') {
+        // Dark, dangerous floor
+        ctx.fillStyle = '#0a0c14';
+        ctx.fillRect(px, py, TILE, TILE);
+        
+        // Menacing red highlights
+        ctx.fillStyle = '#ff003308';
+        ctx.fillRect(px + 1, py + 1, TILE - 2, TILE - 2);
+        
+        // Scratch marks
+        ctx.strokeStyle = '#ff4a6c22';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < 2; i++) {
+          const sx = px + 4 + Math.random() * (TILE - 8);
+          const sy = py + 4 + Math.random() * (TILE - 8);
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.lineTo(sx + 4, sy + 4);
+          ctx.stroke();
+        }
+      } else if (tile.type === 'bridge_floor') {
+        // Wooden/Path bridge style
+        ctx.fillStyle = '#1c2136';
+        ctx.fillRect(px, py, TILE, TILE);
+        ctx.strokeStyle = '#2a3050';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px + 2, py + 2, TILE - 4, TILE - 4);
+        // Horizontal planks
+        ctx.beginPath();
+        for (let i = 4; i < TILE; i += 8) {
+            ctx.moveTo(px + 4, py + i); ctx.lineTo(px + TILE - 4, py + i);
+        }
+        ctx.stroke();
       } else {
+        // Normal path
         ctx.fillStyle = '#10131f';
         ctx.fillRect(px, py, TILE, TILE);
         ctx.strokeStyle = '#1c2136';
@@ -129,10 +182,10 @@ export function render(ctx: CanvasRenderingContext2D, gs: GameState, camX: numbe
     const scaleX = 1 - (bob / 40);
     ctx.scale(scaleX, scaleY);
 
-    if (gs.player.held) {
+    if (m.state === 'rage' || gs.player.held) {
       const pulse = (Math.sin(time / 150) + 1) / 2;
-      ctx.fillStyle = `rgba(255, 0, 0, ${0.2 + pulse * 0.3})`;
-      ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = `rgba(255, 0, 0, ${m.state === 'rage' ? 0.4 + pulse * 0.4 : 0.2 + pulse * 0.3})`;
+      ctx.beginPath(); ctx.arc(0, 0, m.state === 'rage' ? 22 : 18, 0, Math.PI * 2); ctx.fill();
     }
 
     ctx.fillStyle = (m.state === 'chase' || gs.player.held) ? '#ff0033' : '#cc3344';

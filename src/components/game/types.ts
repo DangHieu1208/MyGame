@@ -1,9 +1,9 @@
-export type TileType = 'wall' | 'floor';
+export type TileType = 'wall' | 'floor' | 'gem_floor' | 'monster_floor' | 'bridge_floor';
 export type MatColor = 'red' | 'blue' | 'green' | 'yellow';
 export type Dir = 'up' | 'down' | 'left' | 'right';
 
 export interface Vec2 { x: number; y: number; }
-export interface Tile { type: TileType; }
+export interface Tile { type: TileType; color?: MatColor; }
 
 export interface Player {
   pos: Vec2;
@@ -29,7 +29,7 @@ export interface Obstacle {
   breakProgress: number; // 0 to 10
 }
 
-export type MonsterState = 'patrol' | 'chase' | 'angry' | 'rage';
+export type MonsterState = 'patrol' | 'chase' | 'angry' | 'rage' | 'returning';
 
 export interface Monster {
   id: number;
@@ -46,6 +46,7 @@ export interface Monster {
   dead: boolean;
   state: MonsterState;
   angryTimer: number;
+  color?: MatColor;
 }
 
 export interface MaterialItem {
